@@ -6,6 +6,7 @@ dependencies = [
     "tensorflow",
     "matplotlib",
     "opencv-python",
+    "imagesize",
 ]
 
 name = "ImageClassification_NN"
