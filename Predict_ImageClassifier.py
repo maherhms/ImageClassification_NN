@@ -27,9 +27,9 @@ prediction = model.predict(input_image)
 
 # Interpret the result
 if prediction > 0.5:
-    result = "Sad"
+    result = "dog"
 else:
-    result = "Happy"
+    result = "cat"
 
 # Print the result
 print(f'Predicted class is {result}')

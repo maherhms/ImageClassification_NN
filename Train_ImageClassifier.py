@@ -134,9 +134,9 @@ plt.imshow(resize.numpy().astype(int))
 
 yhat = model.predict(np.expand_dims(resize / 255, 0))
 if yhat > 0.5:
-    print(f'Predicted class is Sad')
+    print(f'Predicted class is dog')
 else:
-    print(f'Predicted class is Happy')
+    print(f'Predicted class is cat')
 
 # 11. Save model
 model.save(os.path.join('models', 'imageclassifier.keras'))
