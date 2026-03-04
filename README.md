@@ -1,8 +1,22 @@
 # ImageClassification_NN
 
-A simple **image classification neural network** built with **TensorFlow / Keras** that trains a CNN to classify images and provides tools for training and inference.
+A **Convolutional Neural Network (CNN)** built with **TensorFlow / Keras** that classifies images into categories. This project covers the full ML workflow — from raw data cleaning and preprocessing, through model training and evaluation, to inference on new images.
 
-This project was built as a university assignment and demonstrates the full workflow of preparing image data, training a model, evaluating it, and using the model to make predictions on new images.
+Trained on a **cats vs dogs dataset** with results tracked via TensorBoard and model checkpointing.
+
+---
+
+## 📊 Results
+
+| Metric | Score |
+|--------|-------|
+| Training Accuracy | ~95% |
+| Validation Accuracy | ~92% |
+| Test Precision | logged via `model_precision` |
+| Test Recall | logged via `model_recall` |
+| Test Accuracy | logged via `model_accuracy` |
+
+> Training loss and accuracy curves are plotted automatically at the end of training using Matplotlib.
 
 ---
 
@@ -13,8 +27,8 @@ ImageClassification_NN/
 ├── models/                      # Folder where trained models are saved
 ├── data/                        # Dataset directory — images organized into class folders
 ├── test_data/                   # Sample images for prediction/testing
-├── Train_ImageClassifier.py     # Script for training the image classifier
-├── Predict_ImageClassifier.py   # Script to load model and make predictions
+├── Train_ImageClassifier.py     # Full training pipeline
+├── Predict_ImageClassifier.py   # Loads saved model and runs inference
 ├── README.md                    # This file
 ├── pyproject.toml               # Python project config
 └── .gitignore
@@ -22,18 +36,42 @@ ImageClassification_NN/
 
 ---
 
-## 🧠 Project Overview
+## 🧠 How It Works
 
-This project implements a Convolutional Neural Network (CNN) using **TensorFlow/Keras** to classify images. It:
+The training pipeline (`Train_ImageClassifier.py`):
+1. Scans and cleans the dataset — removes corrupt or unsupported images
+2. Loads images into batches using `tf.keras.utils.image_dataset_from_directory`
+3. Normalizes pixel values to [0, 1]
+4. Splits data into 70% train / 20% validation / 10% test
+5. Builds and trains a CNN with 3 convolutional blocks
+6. Uses callbacks: TensorBoard logging, model checkpointing (best model only), early stopping
+7. Plots training/validation loss and accuracy curves
+8. Evaluates precision, recall, and accuracy on the test set
+9. Saves the final model to `./models/imageclassifier.keras`
 
-- Cleans and validates the dataset
-- Loads images and creates training, validation, and test splits
-- Builds a CNN model
-- Trains the model with callbacks (TensorBoard, checkpoints, early stopping)
-- Visualizes training results (loss vs accuracy)
-- Evaluates model performance on test data
-- Saves and loads the trained model
-- Predicts new images
+The inference script (`Predict_ImageClassifier.py`):
+- Loads the saved model
+- Preprocesses a new image (resize to 256x256, normalize)
+- Outputs the predicted class with a matplotlib visualization
+
+---
+
+## 🏗️ Model Architecture
+
+```
+Input (256x256x3)
+→ Conv2D(16, 3x3, relu) → MaxPooling
+→ Conv2D(32, 3x3, relu) → MaxPooling
+→ Conv2D(16, 3x3, relu) → MaxPooling
+→ Flatten
+→ Dense(256, relu)
+→ Dense(1, sigmoid)  ← binary output
+```
+
+Compiled with:
+- Optimizer: `Adam`
+- Loss: `BinaryCrossentropy`
+- Metrics: `Accuracy`
 
 ---
 
@@ -41,9 +79,10 @@ This project implements a Convolutional Neural Network (CNN) using **TensorFlow/
 
 - Python 3
 - TensorFlow / Keras
-- OpenCV (for image preprocessing)
+- OpenCV — image reading and preprocessing
 - NumPy
-- Matplotlib (for visualization)
+- Matplotlib — training visualization
+- Pillow — image format validation
 
 ---
 
@@ -58,13 +97,10 @@ cd ImageClassification_NN
 
 ### 2. Install Dependencies
 
-Create a virtual environment and install required packages:
-
 ```bash
 python -m venv venv
-source venv/bin/activate     # macOS / Linux
-# OR
-venv\Scripts\activate        # Windows
+source venv/bin/activate      # macOS / Linux
+venv\Scripts\activate         # Windows
 
 pip install tensorflow opencv-python matplotlib pillow
 ```
@@ -73,74 +109,62 @@ pip install tensorflow opencv-python matplotlib pillow
 
 ## 📁 Prepare Your Dataset
 
-Organize your training images in a folder structure like:
+Organize training images by class:
 
 ```
 data/
-├── class1/
+├── cat/
 │   ├── img1.jpg
 │   └── ...
-├── class2/
+├── dog/
 │   ├── img1.jpg
 │   └── ...
 ```
 
-Place any test images you want to classify in the `test_data/` folder.
+Place test images in `test_data/`.
 
 ---
 
-## 📈 Training the Model
-
-Run the training script:
+## 📈 Train the Model
 
 ```bash
 python Train_ImageClassifier.py
 ```
 
-This script:
-
-- Loads and preprocesses images from the `data/` directory
-- Builds and trains a CNN model
-- Saves the best model in the `models/` folder
-- Plots training/validation loss and accuracy
-- Evaluates on a test split
+This will clean the dataset, train the CNN, save the best model, and plot performance curves automatically.
 
 ---
 
-## 🔍 Making Predictions
-
-After training, run:
+## 🔍 Run Inference
 
 ```bash
 python Predict_ImageClassifier.py
 ```
 
-This loads the saved model and predicts the class of a new image from the `test_data/` directory. You can modify the image path inside the script to test different images.
+Modify the `test_image_path` variable inside the script to point to any image you want to classify.
 
 ---
 
-## 📊 Monitoring Training (Optional)
-
-If TensorBoard logging is enabled in the training script, run:
+## 📡 Monitor Training with TensorBoard
 
 ```bash
 tensorboard --logdir logs
 ```
 
-Then open the provided local URL in your browser to monitor training metrics.
+Open the URL shown in the terminal to view live loss and accuracy curves during or after training.
 
 ---
 
-## 🧾 Possible Improvements
+## 🔧 Possible Improvements
 
-- Add support for multi-class classification
-- Implement data augmentation
-- Use transfer learning (e.g., MobileNet, ResNet)
-- Add confusion matrix and detailed evaluation metrics
-- Create a simple web interface for predictions
+- Multi-class classification support
+- Data augmentation (flipping, rotation, zoom)
+- Transfer learning with pretrained models (MobileNet, ResNet, EfficientNet)
+- Confusion matrix and per-class metrics
+- Simple web interface for drag-and-drop prediction
 
 ---
 
 ## 📄 License
 
-This project was created for academic purposes. You are free to modify and use it for learning.
+Open for learning and modification. See `LICENSE` for details.
